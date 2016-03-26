@@ -1,0 +1,10 @@
+[package]
+name = "password-server"
+version = "0.1.0"
+authors = ["Evan Cameron <cameron.evan@gmail.com>"]
+
+[dependencies]
+router = "*"
+
+[dependencies.iron]
+version = "*"
