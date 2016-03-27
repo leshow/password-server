@@ -8,12 +8,15 @@ use router::Router;
 fn main() {
     let mut router = Router::new();
     router.get("/", handler);
-    router.get("/:query", handler);
+    router.get("/generate", generate_handler);
 
     Iron::new(router).http("localhost:3000").unwrap();
+}
 
-    fn handler(req: &mut Request) -> IronResult<Response> {
-        let query = req.extensions.get::<Router>().unwrap().find("query").unwrap_or("/");
-        Ok(Response::with((status::Ok, query)))
-    }
+fn handler(_: &mut Request) -> IronResult<Response> {
+    Ok(Response::with((status::Ok, "OK")))
+}
+
+fn generate_handler(_: &mut Request) -> IronResult<Response> {
+    Ok(Response::with((status::Ok)))
 }
