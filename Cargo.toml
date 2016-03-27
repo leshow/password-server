@@ -4,7 +4,5 @@ version = "0.1.0"
 authors = ["Evan Cameron <cameron.evan@gmail.com>"]
 
 [dependencies]
+iron = "*"
 router = "*"
-
-[dependencies.iron]
-version = "*"
