@@ -1,9 +1,12 @@
 extern crate iron;
 extern crate router;
+extern crate lib;
 
 use iron::prelude::*;
 use iron::status;
 use router::Router;
+
+use lib::MnemonicBuilder;
 
 fn main() {
     let mut router = Router::new();

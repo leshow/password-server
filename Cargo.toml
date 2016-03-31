@@ -3,6 +3,12 @@ name = "password-server"
 version = "0.1.0"
 authors = ["Evan Cameron <cameron.evan@gmail.com>"]
 
+[lib]
+name = "lib"
+path = "src/lib.rs"
+
 [dependencies]
 iron = "*"
 router = "*"
+rust-crypto = "*"
+rustc-serialize = "*"
