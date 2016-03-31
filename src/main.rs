@@ -32,5 +32,5 @@ fn handler(_: &mut Request) -> IronResult<Response> {
 fn generate_handler(_: &mut Request) -> IronResult<Response> {
     let mnemonic: Mnemonic = MnemonicBuilder::new().create();
 
-    Ok(Response::with((status::Ok, mnemonic.binary_hash)))
+    Ok(Response::with((status::Ok, mnemonic.in_binary)))
 }

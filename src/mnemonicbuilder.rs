@@ -51,8 +51,8 @@ impl <'a> MnemonicBuilder <'a> {
 
     pub fn to_words(&self, mnemonic: Mnemonic) -> Vec<String> {
         let mut mnem_words = Vec::new();
-        for i in 0usize .. mnemonic.binary_hash.len() / 11 {
-            let bin_idx = &mnemonic.binary_hash[i * 11 .. (i + 1) * 11];
+        for i in 0usize .. mnemonic.in_binary.len() / 11 {
+            let bin_idx = &mnemonic.in_binary[i * 11 .. (i + 1) * 11];
             let idx = isize::from_str_radix(bin_idx, 2).unwrap();
 
             mnem_words.push(self.wordslist[idx as usize].clone()); //remove clone

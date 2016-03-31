@@ -11,7 +11,7 @@ static PBKDF2_ROUNDS: u32 = 2048;
 static PBKDF2_KEY_LEN: usize = 64;
 
 pub struct Mnemonic {
-    pub binary_hash: String,
+    pub in_binary: String,
 }
 
 impl Mnemonic {
@@ -28,7 +28,7 @@ impl Mnemonic {
         //concatenate the two binary strings together
         let random_hash: String =  s_two + &h_two[.. length];
 
-        Mnemonic { binary_hash: random_hash }
+        Mnemonic { in_binary: random_hash }
     }
 
     pub fn to_seed(&self, mnemonic: &str, seed_value: &str) -> Vec<u8> {
