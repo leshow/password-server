@@ -9,7 +9,7 @@ use iron::status;
 use router::Router;
 use logger::Logger;
 
-use lib::MnemonicBuilder;
+use lib::{MnemonicBuilder, Mnemonic};
 
 fn main() {
     let (logger_before, logger_after) = Logger::new(None);
@@ -30,5 +30,7 @@ fn handler(_: &mut Request) -> IronResult<Response> {
 }
 
 fn generate_handler(_: &mut Request) -> IronResult<Response> {
-    Ok(Response::with((status::Ok)))
+    let mnemonic: Mnemonic = MnemonicBuilder::new().create();
+
+    Ok(Response::with((status::Ok, mnemonic.binary_hash)))
 }
