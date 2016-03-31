@@ -1,19 +1,28 @@
 extern crate iron;
 extern crate router;
+extern crate logger;
+
 extern crate lib;
 
 use iron::prelude::*;
 use iron::status;
 use router::Router;
+use logger::Logger;
 
 use lib::MnemonicBuilder;
 
 fn main() {
+    let (logger_before, logger_after) = Logger::new(None);
+
     let mut router = Router::new();
     router.get("/", handler);
     router.get("/generate", generate_handler);
 
-    Iron::new(router).http("localhost:3000").unwrap();
+    let mut chain = Chain::new(router);
+    chain.link_before(logger_before);
+    chain.link_after(logger_after);
+
+    Iron::new(chain).http("localhost:3000").unwrap();
 }
 
 fn handler(_: &mut Request) -> IronResult<Response> {
