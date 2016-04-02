@@ -13,7 +13,7 @@ use lib::{MnemonicBuilder, Mnemonic};
 
 fn main() {
     let (logger_before, logger_after) = Logger::new(None);
-    let builder: MnemonicBuilder = MnemonicBuilder::new();
+    let builder: MnemonicBuilder = MnemonicBuilder::new().expect("Failed to open wordlist.");
 
     let mut router = Router::new();
     router.get("/", handler);

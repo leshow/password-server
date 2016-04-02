@@ -6,7 +6,7 @@ use mnemonic::Mnemonic;
 // std
 use std::fs::File;
 use std::path::Path;
-use std::io::Read;
+use std::io::{Read, Error};
 
 static LENGTH: usize = 32;
 
@@ -17,17 +17,17 @@ pub struct MnemonicBuilder <'a> {
 }
 
 impl <'a> MnemonicBuilder <'a> {
-    pub fn new<'b>() -> MnemonicBuilder<'a> {
+    //
+    pub fn new<'b>() -> Result<MnemonicBuilder<'a>, Error> {
         let str_seed: &str = "seed";
         let path = Path::new("src/wordslist/english.txt");
-//        let display = path.display();
-        let mut file = File::open(&path).unwrap();
+        let mut file = try!(File::open(&path));
         let mut string_from_file = String::new();
 
-        file.read_to_string(&mut string_from_file).unwrap();
+        try!(file.read_to_string(&mut string_from_file));
         let words: Vec<String> = string_from_file.split_whitespace().map(|s| s.to_owned()).collect();
 
-        MnemonicBuilder { seed: str_seed, wordslist: words, bit_length: LENGTH }
+        Ok(MnemonicBuilder { seed: str_seed, wordslist: words, bit_length: LENGTH })
     }
 
     pub fn with_seed(mut self, new_seed: &'a str) -> MnemonicBuilder<'a> {
