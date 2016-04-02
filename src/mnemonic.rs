@@ -42,6 +42,18 @@ impl Mnemonic {
         result
     }
 
+    pub fn to_words(&self, wordslist: &Vec<String>) -> Vec<String> {
+        let mut mnem_words = Vec::new();
+        for i in 0usize .. self.in_binary.len() / 11 {
+            let bin_idx = &self.in_binary[i * 11 .. (i + 1) * 11];
+            let idx = isize::from_str_radix(bin_idx, 2).unwrap();
+
+            mnem_words.push(wordslist[idx as usize].clone()); //remove clone
+        }
+
+        mnem_words
+    }
+
     fn gen_sha256(hashme: &str) -> String {
         let mut sh = Sha256::new();
         sh.input_str(hashme);

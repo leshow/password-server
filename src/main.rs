@@ -30,7 +30,8 @@ fn handler(_: &mut Request) -> IronResult<Response> {
 }
 
 fn generate_handler(_: &mut Request) -> IronResult<Response> {
-    let mnemonic: Mnemonic = MnemonicBuilder::new().create();
-
-    Ok(Response::with((status::Ok, mnemonic.in_binary)))
+    let builder: MnemonicBuilder = MnemonicBuilder::new();
+    let mnemonic: Mnemonic = builder.create();
+    
+    Ok(Response::with((status::Ok, mnemonic.to_words(&builder.wordslist).join(" "))))
 }

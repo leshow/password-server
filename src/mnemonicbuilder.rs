@@ -11,8 +11,8 @@ use std::io::Read;
 static LENGTH: usize = 32;
 
 pub struct MnemonicBuilder <'a> {
+    pub wordslist: Vec<String>,
     seed: &'a str,
-    wordslist: Vec<String>,
     bit_length: usize
 }
 
@@ -47,17 +47,5 @@ impl <'a> MnemonicBuilder <'a> {
         let random_chars: String = rng.gen_ascii_chars().take(self.bit_length).collect();
 
         Mnemonic::new(random_chars)
-    }
-
-    pub fn to_words(&self, mnemonic: Mnemonic) -> Vec<String> {
-        let mut mnem_words = Vec::new();
-        for i in 0usize .. mnemonic.in_binary.len() / 11 {
-            let bin_idx = &mnemonic.in_binary[i * 11 .. (i + 1) * 11];
-            let idx = isize::from_str_radix(bin_idx, 2).unwrap();
-
-            mnem_words.push(self.wordslist[idx as usize].clone()); //remove clone
-        }
-
-        mnem_words
     }
 }
