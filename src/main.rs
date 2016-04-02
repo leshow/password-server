@@ -13,10 +13,11 @@ use lib::{MnemonicBuilder, Mnemonic};
 
 fn main() {
     let (logger_before, logger_after) = Logger::new(None);
+    let builder: MnemonicBuilder = MnemonicBuilder::new();
 
     let mut router = Router::new();
     router.get("/", handler);
-    router.get("/generate", generate_handler);
+    router.get("/generate", move |r: &mut Request| generate_handler(r, &builder));
 
     let mut chain = Chain::new(router);
     chain.link_before(logger_before);
@@ -29,9 +30,8 @@ fn handler(_: &mut Request) -> IronResult<Response> {
     Ok(Response::with((status::Ok, "OK")))
 }
 
-fn generate_handler(_: &mut Request) -> IronResult<Response> {
-    let builder: MnemonicBuilder = MnemonicBuilder::new();
+fn generate_handler(_: &mut Request, builder: &MnemonicBuilder) -> IronResult<Response> {
     let mnemonic: Mnemonic = builder.create();
-    
+
     Ok(Response::with((status::Ok, mnemonic.to_words(&builder.wordslist).join(" "))))
 }
