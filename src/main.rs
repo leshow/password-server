@@ -33,7 +33,7 @@ fn main() {
     let mut mounts = Mount::new();
     mounts
         .mount("/", chain)
-        .mount("/public", Static::new(Path::new("frontend/index.html")));
+        .mount("/public", Static::new(Path::new("frontend/dist/index.html")));
 
     Iron::new(mounts).http("localhost:3000").unwrap();
 }
