@@ -10,13 +10,13 @@ use std::io::{Read, Error};
 
 static LENGTH: usize = 32;
 
-pub struct MnemonicBuilder <'a> {
+pub struct MnemonicBuilder<'a> {
     pub wordslist: Vec<String>,
     seed: &'a str,
-    bit_length: usize
+    bit_length: usize,
 }
 
-impl <'a> MnemonicBuilder <'a> {
+impl<'a> MnemonicBuilder<'a> {
     //
     pub fn new<'b>() -> Result<MnemonicBuilder<'a>, Error> {
         let str_seed: &str = "seed";
@@ -25,9 +25,15 @@ impl <'a> MnemonicBuilder <'a> {
         let mut string_from_file = String::new();
 
         try!(file.read_to_string(&mut string_from_file));
-        let words: Vec<String> = string_from_file.split_whitespace().map(|s| s.to_owned()).collect();
+        let words: Vec<String> = string_from_file.split_whitespace()
+                                                 .map(|s| s.to_owned())
+                                                 .collect();
 
-        Ok(MnemonicBuilder { seed: str_seed, wordslist: words, bit_length: LENGTH })
+        Ok(MnemonicBuilder {
+            seed: str_seed,
+            wordslist: words,
+            bit_length: LENGTH,
+        })
     }
 
     pub fn with_seed(mut self, new_seed: &'a str) -> MnemonicBuilder<'a> {

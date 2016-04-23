@@ -23,7 +23,8 @@ fn main() {
 
     // set up routes
     let mut router = Router::new();
-    router.get("/generate", move |r: &mut Request| generate_handler(r, &builder));
+    router.get("/generate",
+               move |r: &mut Request| generate_handler(r, &builder));
 
     // add logger middleware
     let mut chain = Chain::new(router);
@@ -31,9 +32,9 @@ fn main() {
     chain.link_after(logger_after);
     // set up mount for static file serving
     let mut mounts = Mount::new();
-    mounts
-        .mount("/", chain)
-        .mount("/public", Static::new(Path::new("frontend/dist/index.html")));
+    mounts.mount("/", chain)
+          .mount("/public",
+                 Static::new(Path::new("frontend/dist/index.html")));
 
     Iron::new(mounts).http("localhost:3000").unwrap();
 }

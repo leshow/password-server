@@ -13,18 +13,18 @@ pub struct Mnemonic {
 }
 
 impl Mnemonic {
-    pub fn new(chars:String) -> Mnemonic {
+    pub fn new(chars: String) -> Mnemonic {
         let h: String = Mnemonic::gen_sha256(&chars);
 
-        //get binary string of random seed
+        // get binary string of random seed
         let s_two: String = Mnemonic::to_binary(chars.as_bytes());
 
-        //get binary str of sha256 hash
+        // get binary str of sha256 hash
         let h_two: String = Mnemonic::to_binary(&h.from_hex().unwrap());
         let length = s_two.len() / 32;
 
-        //concatenate the two binary strings together
-        let random_hash: String =  s_two + &h_two[.. length];
+        // concatenate the two binary strings together
+        let random_hash: String = s_two + &h_two[..length];
 
         Mnemonic { in_binary: random_hash }
     }
@@ -42,8 +42,8 @@ impl Mnemonic {
 
     pub fn to_words(&self, wordslist: &Vec<String>) -> Vec<String> {
         let mut mnem_words = Vec::new();
-        for i in 0usize .. self.in_binary.len() / 11 {
-            let bin_idx = &self.in_binary[i * 11 .. (i + 1) * 11];
+        for i in 0usize..self.in_binary.len() / 11 {
+            let bin_idx = &self.in_binary[i * 11..(i + 1) * 11];
             let idx = isize::from_str_radix(bin_idx, 2).unwrap();
 
             mnem_words.push(wordslist[idx as usize].clone()); //remove clone
@@ -63,12 +63,12 @@ impl Mnemonic {
         let mut s_two = String::new();
 
         for &s_byte in input.iter() {
-            let byte_slice = format!("{:b}",s_byte);
+            let byte_slice = format!("{:b}", s_byte);
             let mut empty = EMPTY.to_string();
 
             empty.push_str(&byte_slice);
 
-            let slice = &empty[empty.len()-8 ..];
+            let slice = &empty[empty.len() - 8..];
 
             s_two.push_str(slice);
         }
