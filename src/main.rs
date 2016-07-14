@@ -17,8 +17,10 @@ fn main() {
 
     // set up routes
     let mut router = Router::new();
-    router.get("/generate",
+    router.get("/mnemonic",
                move |r: &mut Request| generate_handler(r, &builder));
+    router.get("/mnemonic/:num",
+               move |r: &mut Request| generate_length_handler(r, &builder));
 
     // add logger middleware
     let mut chain = Chain::new(router);
@@ -29,7 +31,19 @@ fn main() {
 }
 
 fn generate_handler(_: &mut Request, builder: &MnemonicBuilder) -> IronResult<Response> {
-    let mnemonic: Mnemonic = builder.create();
+    let mnemonic: Mnemonic = builder.create().unwrap();
 
     Ok(Response::with((status::Ok, mnemonic.to_words(&builder.wordslist).join(" "))))
+}
+
+fn generate_length_handler(req: &mut Request, builder: &MnemonicBuilder) -> IronResult<Response> {
+    // let ref num: u8 = req.extensions.get::<Router>().unwrap().find("num").unwrap_or(12);
+    let num = 8usize;
+    let mnemonic: Mnemonic = builder.create().unwrap();
+
+    Ok(Response::with((status::Ok,
+                       mnemonic.to_words(&builder.wordslist)
+        .iter()
+        .take(num)
+        .fold(String::new(), |acc, &word| format!("{} {}", acc, word)))))
 }

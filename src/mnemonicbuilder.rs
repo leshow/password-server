@@ -26,8 +26,8 @@ impl<'a> MnemonicBuilder<'a> {
 
         try!(file.read_to_string(&mut string_from_file));
         let words: Vec<String> = string_from_file.split_whitespace()
-                                                 .map(|s| s.to_owned())
-                                                 .collect();
+            .map(|s| s.to_owned())
+            .collect();
 
         Ok(MnemonicBuilder {
             seed: str_seed,
@@ -48,10 +48,12 @@ impl<'a> MnemonicBuilder<'a> {
         self
     }
 
-    pub fn create(&self) -> Mnemonic {
-        let mut rng = OsRng::new().unwrap();
-        let random_chars: String = rng.gen_ascii_chars().take(self.bit_length).collect();
+    pub fn create(&self) -> Result<Mnemonic, Error> {
+        let mut rng = try!(OsRng::new());
+        let random_chars: String = rng.gen_ascii_chars()
+            .take(self.bit_length)
+            .collect();
 
-        Mnemonic::new(random_chars)
+        Ok(Mnemonic::new(random_chars))
     }
 }

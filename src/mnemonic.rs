@@ -8,6 +8,7 @@ static EMPTY: &'static str = "00000000";
 static PBKDF2_ROUNDS: u32 = 2048;
 static PBKDF2_KEY_LEN: usize = 64;
 
+#[derive(Copy, Clone)]
 pub struct Mnemonic {
     pub in_binary: String,
 }
