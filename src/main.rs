@@ -4,6 +4,11 @@ extern crate logger;
 
 extern crate lib;
 
+
+use std::io;
+use std::fmt::{self, Debug};
+use std::error::Error;
+
 use iron::prelude::*;
 use iron::status;
 use router::Router;
@@ -31,19 +36,45 @@ fn main() {
 }
 
 fn generate_handler(_: &mut Request, builder: &MnemonicBuilder) -> IronResult<Response> {
-    let mnemonic: Mnemonic = builder.create().unwrap();
+    let mnemonic: Result<Mnemonic, io::Error> = builder.create();
 
-    Ok(Response::with((status::Ok, mnemonic.to_words(&builder.wordslist).join(" "))))
+    match mnemonic {
+        Ok(x) => Ok(Response::with((status::Ok, x.to_words(&builder.wordslist).join(" ")))),
+        Err(x) => Err(IronError::new(StringError(x.to_string()), (status::BadRequest, "Error"))),
+    }
 }
 
 fn generate_length_handler(req: &mut Request, builder: &MnemonicBuilder) -> IronResult<Response> {
-    // let ref num: u8 = req.extensions.get::<Router>().unwrap().find("num").unwrap_or(12);
-    let num = 8usize;
-    let mnemonic: Mnemonic = builder.create().unwrap();
+    let num_str = req.extensions.get::<Router>().unwrap().find("num").unwrap();
+    let num = match num_str.parse::<usize>() {
+        Ok(result) => result,
+        Err(_) => 24, // default size
+    };
+    let mnemonic: Result<Mnemonic, io::Error> = builder.create();
 
-    Ok(Response::with((status::Ok,
-                       mnemonic.to_words(&builder.wordslist)
-        .iter()
-        .take(num)
-        .fold(String::new(), |acc, &word| format!("{} {}", acc, word)))))
+    match mnemonic {
+        Ok(x) => {
+            Ok(Response::with((status::Ok,
+                               x.to_words(&builder.wordslist)
+                .iter()
+                .take(num)
+                .fold(String::new(), |acc, word| format!("{} {}", acc, word)))))
+        }
+        Err(x) => Err(IronError::new(StringError(x.to_string()), (status::BadRequest, "Error"))),
+    }
+}
+
+#[derive(Debug)]
+struct StringError(String);
+
+impl fmt::Display for StringError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        Debug::fmt(self, f)
+    }
+}
+
+impl Error for StringError {
+    fn description(&self) -> &str {
+        &*self.0
+    }
 }

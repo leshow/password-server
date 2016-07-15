@@ -7,6 +7,7 @@ use mnemonic::Mnemonic;
 use std::fs::File;
 use std::path::Path;
 use std::io::{Read, Error};
+use std::result::Result;
 
 static LENGTH: usize = 32;
 
