@@ -23,9 +23,11 @@ fn main() {
 
     // set up routes
     let mut router = Router::new();
+
     let builder1 = builder.clone();
     router.get("/mnemonic",
                move |r: &mut Request| generate_handler(r, &builder1));
+
     let builder2 = builder.clone();
     router.get("/mnemonic/:num",
                move |r: &mut Request| generate_length_handler(r, &builder2));
