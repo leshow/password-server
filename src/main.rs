@@ -8,6 +8,7 @@ extern crate lib;
 use std::io;
 use std::fmt::{self, Debug};
 use std::error::Error;
+use std::sync::Arc;
 
 use iron::prelude::*;
 use iron::status;
@@ -18,14 +19,16 @@ use lib::{MnemonicBuilder, Mnemonic};
 
 fn main() {
     let (logger_before, logger_after) = Logger::new(None);
-    let builder: MnemonicBuilder = MnemonicBuilder::new().expect("Failed to open wordlist.");
+    let builder = Arc::new(MnemonicBuilder::new().expect("Failed to open wordlist."));
 
     // set up routes
     let mut router = Router::new();
+    let builder1 = builder.clone();
     router.get("/mnemonic",
-               move |r: &mut Request| generate_handler(r, &builder));
+               move |r: &mut Request| generate_handler(r, &builder1));
+    let builder2 = builder.clone();
     router.get("/mnemonic/:num",
-               move |r: &mut Request| generate_length_handler(r, &builder));
+               move |r: &mut Request| generate_length_handler(r, &builder2));
 
     // add logger middleware
     let mut chain = Chain::new(router);
@@ -46,20 +49,11 @@ fn generate_handler(_: &mut Request, builder: &MnemonicBuilder) -> IronResult<Re
 
 fn generate_length_handler(req: &mut Request, builder: &MnemonicBuilder) -> IronResult<Response> {
     let num_str = req.extensions.get::<Router>().unwrap().find("num").unwrap();
-    let num = match num_str.parse::<usize>() {
-        Ok(result) => result,
-        Err(_) => 24, // default size
-    };
+    let num = num_str.parse::<usize>().unwrap_or(24);
     let mnemonic: Result<Mnemonic, io::Error> = builder.create();
 
     match mnemonic {
-        Ok(x) => {
-            Ok(Response::with((status::Ok,
-                               x.to_words(&builder.wordslist)
-                .iter()
-                .take(num)
-                .fold(String::new(), |acc, word| format!("{} {}", acc, word)))))
-        }
+        Ok(x) => Ok(Response::with((status::Ok, x.to_words(&builder.wordslist)[0..num].join(" ")))),
         Err(x) => Err(IronError::new(StringError(x.to_string()), (status::BadRequest, "Error"))),
     }
 }
