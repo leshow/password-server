@@ -25,11 +25,11 @@ fn main() {
     let mut router = Router::new();
 
     let builder1 = builder.clone();
-    router.get("/mnemonic",
+    router.get("/passphrase",
                move |r: &mut Request| generate_handler(r, &builder1));
 
     let builder2 = builder.clone();
-    router.get("/mnemonic/:num",
+    router.get("/passphrase/:num",
                move |r: &mut Request| generate_length_handler(r, &builder2));
 
     // add logger middleware
