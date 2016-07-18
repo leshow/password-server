@@ -18,8 +18,7 @@ pub struct MnemonicBuilder<'a> {
 }
 
 impl<'a> MnemonicBuilder<'a> {
-    //
-    pub fn new<'b>() -> Result<MnemonicBuilder<'a>, Error> {
+    pub fn new() -> Result<MnemonicBuilder<'a>, Error> {
         let str_seed: &str = "seed";
         let path = Path::new("src/wordslist/english.txt");
         let mut file = try!(File::open(&path));

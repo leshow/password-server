@@ -40,7 +40,7 @@ impl Mnemonic {
         result
     }
 
-    pub fn to_words(&self, wordslist: &Vec<String>) -> Vec<String> {
+    pub fn to_words(&self, wordslist: &[String]) -> Vec<String> {
         let mut mnem_words = Vec::new();
         for i in 0usize..self.in_binary.len() / 11 {
             let bin_idx = &self.in_binary[i * 11..(i + 1) * 11];
@@ -76,9 +76,3 @@ impl Mnemonic {
         s_two
     }
 }
-// impl Copy for Mnemonic {}
-// impl Clone for Mnemonic {
-//     fn clone(&self) -> Mnemonic {
-//         Mnemonic { in_binary: *self.in_binary }
-//     }
-// }
