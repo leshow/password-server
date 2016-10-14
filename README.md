@@ -5,8 +5,6 @@ Project incorporating my [rust-mnemonic](https://github.com/leshow/rust_mnemonic
 
 This project is intended to be deployed internally at a company, or on a local network, although I imagine it could have some use as part of a larger tool.
 
-Currently it uses a feature from the nightly compiler, the `?` syntax. This syntax intends to replace the `try!` macro.
-
 
 Setting up server
 ```bash
