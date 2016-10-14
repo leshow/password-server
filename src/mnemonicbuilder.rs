@@ -21,10 +21,10 @@ impl<'a> MnemonicBuilder<'a> {
     pub fn new() -> Result<MnemonicBuilder<'a>, Error> {
         let str_seed: &str = "seed";
         let path = Path::new("src/wordslist/english.txt");
-        let mut file = File::open(&path)?;
+        let mut file = try!(File::open(&path));
         let mut string_from_file = String::new();
 
-        file.read_to_string(&mut string_from_file)?;
+        try!(file.read_to_string(&mut string_from_file));
         let words: Vec<String> = string_from_file.split_whitespace()
             .map(|s| s.to_owned())
             .collect();
@@ -45,7 +45,7 @@ impl<'a> MnemonicBuilder<'a> {
     }
 
     pub fn create(&self) -> Result<Mnemonic, Error> {
-        let mut rng = OsRng::new()?;
+        let mut rng = try!(OsRng::new());
         let random_chars: String = rng.gen_ascii_chars()
             .take(self.bit_length)
             .collect();

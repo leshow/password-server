@@ -1,5 +1,3 @@
-#![feature(question_mark)]
-
 extern crate crypto;
 extern crate rustc_serialize;
 extern crate rand;
