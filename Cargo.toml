@@ -1,6 +1,6 @@
 [package]
 name = "password-server"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Evan Cameron <cameron.evan@gmail.com>"]
 
 [lib]
@@ -8,10 +8,10 @@ name = "lib"
 path = "src/lib.rs"
 
 [dependencies]
-iron = "*"
-router = "*"
-logger = "*"
-rust-crypto = "*"
-rustc-serialize = "*"
-rand = "*"
-nom = "*"
+iron = "0.4.0"
+router = "0.4.0"
+logger = "0.1.0"
+rust-crypto = "0.2.36"
+rustc-serialize = "0.3.19"
+rand = "0.3.14"
+nom = "1.2.4"
