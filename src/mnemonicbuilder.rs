@@ -50,6 +50,6 @@ impl<'a> MnemonicBuilder<'a> {
             .take(self.bit_length)
             .collect();
 
-        Ok(Mnemonic::new(random_chars))
+        Ok(Mnemonic::new(&random_chars))
     }
 }

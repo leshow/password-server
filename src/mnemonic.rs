@@ -2,31 +2,24 @@ use crypto::pbkdf2::pbkdf2;
 use crypto::sha2::{Sha256, Sha512};
 use crypto::hmac::Hmac;
 use crypto::digest::Digest;
+
 use rustc_serialize::hex::FromHex;
 
-static EMPTY: &'static str = "00000000";
+use nom::IResult;
+
 static PBKDF2_ROUNDS: u32 = 2048;
 static PBKDF2_KEY_LEN: usize = 64;
 
 pub struct Mnemonic {
-    pub in_binary: String,
+    pub in_binary: Vec<u8>,
 }
 
 impl Mnemonic {
-    pub fn new(chars: String) -> Mnemonic {
-        let h: String = Mnemonic::gen_sha256(&chars);
+    pub fn new(chars: &str) -> Mnemonic {
+        let h = Mnemonic::gen_sha256(&chars).from_hex().unwrap();
+        let length = chars.len() / 32;
 
-        // get binary string of random seed
-        let s_two: String = Mnemonic::to_binary(chars.as_bytes());
-
-        // get binary str of sha256 hash
-        let h_two: String = Mnemonic::to_binary(&h.from_hex().unwrap());
-        let length = s_two.len() / 32;
-
-        // concatenate the two binary strings together
-        let random_hash: String = s_two + &h_two[..length];
-
-        Mnemonic { in_binary: random_hash }
+        Mnemonic { in_binary: [chars.as_ref(), &h[..length]].concat() }
     }
 
     pub fn to_seed(&self, mnemonic: &str, seed_value: &str) -> Vec<u8> {
@@ -41,12 +34,13 @@ impl Mnemonic {
     }
 
     pub fn to_words(&self, wordslist: &[String]) -> Vec<String> {
-        let mut mnem_words = Vec::new();
-        for i in 0usize..self.in_binary.len() / 11 {
-            let bin_idx = &self.in_binary[i * 11..(i + 1) * 11];
-            let idx = isize::from_str_radix(bin_idx, 2).unwrap();
+        named!(bit_vec<Vec<u16> >, bits!(many0!(take_bits!(u16, 11))));
 
-            mnem_words.push(wordslist[idx as usize].clone()); //remove clone
+        let mut mnem_words = Vec::new();
+        if let IResult::Done(_, bit_sequence) = bit_vec(self.in_binary.as_slice()) {
+            for idx in bit_sequence.iter() {
+                mnem_words.push(wordslist[*idx as usize].clone());
+            }
         }
 
         mnem_words
@@ -57,22 +51,5 @@ impl Mnemonic {
         sh.input_str(hashme);
 
         sh.result_str()
-    }
-
-    fn to_binary(input: &[u8]) -> String {
-        let mut s_two = String::new();
-
-        for &s_byte in input.iter() {
-            let byte_slice = format!("{:b}", s_byte);
-            let mut empty = EMPTY.to_string();
-
-            empty.push_str(&byte_slice);
-
-            let slice = &empty[empty.len() - 8..];
-
-            s_two.push_str(slice);
-        }
-
-        s_two
     }
 }
