@@ -26,8 +26,10 @@ Building and deploying
 ```bash
 $ cargo build --release
 $ ./target/release/password-server
-GET http://localhost:3000/passphrase -> 200 OK (0.060287 ms)
-GET http://localhost:3000/passphrase -> 200 OK (0.061226 ms)
+GET http://localhost:3000/passphrase -> 200 OK (0.05844 ms)
+GET http://localhost:3000/passphrase -> 200 OK (0.055507 ms)
 ```
 
-On my machine, the debug build run with `cargo run` generates mnemonics around 0.2 - 0.3ms, the release build generates in ~0.06ms, so there are significant speed gains from creating a release build.
+On my machine, the debug build run with `cargo run` generates mnemonics ~0.2ms, the release build generates in ~0.05, so there are significant speed gains from creating a release build.
+
+I was also able to get a decent speed up by using the `nom` crate to parse the the hash into the wordslist. The BIP39 implementation I referenced in python took 11 bits at a time, converted to an integer and used that as the index in the wordslist. Using `nom` I was able to very simply make a parser out of their combinator macros that consumes 11 bits of data at a time.
