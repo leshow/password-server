@@ -4,11 +4,17 @@ use crypto::hmac::Hmac;
 use crypto::digest::Digest;
 
 use rustc_serialize::hex::FromHex;
+use rustc_serialize::json;
 
 use nom::IResult;
 
 static PBKDF2_ROUNDS: u32 = 2048;
 static PBKDF2_KEY_LEN: usize = 64;
+
+#[derive(RustcEncodable)]
+struct MnemonicResponse {
+    passphrase: String,
+}
 
 pub struct Mnemonic {
     pub mnemonic: Vec<u8>,
@@ -34,9 +40,8 @@ impl Mnemonic {
     }
 
     pub fn to_words(&self, wordslist: &[String]) -> Vec<String> {
-        // Some explanation is necessary.. This uses nom's macros to create a function that
-        // creates a parser specifically for grabbing bits 11 at a time, and putting them in a
-        // u16.
+        // Some explanation is necessary.. This uses nom's combinator macros to create a function
+        // that when called, a parser specifically for grabbing bits 11 at a time.
         named!(bit_vec<Vec<u16> >, bits!(many0!(take_bits!(u16, 11))));
 
         let mut mnem_words = Vec::new();
@@ -47,6 +52,11 @@ impl Mnemonic {
         }
 
         mnem_words
+    }
+
+    pub fn to_json(&self, wordslist: &[String]) -> String {
+        let words = self.to_words(wordslist).join(" ");
+        json::encode(&MnemonicResponse { passphrase: words }).unwrap()
     }
 
     fn gen_sha256(hashme: &str) -> String {
