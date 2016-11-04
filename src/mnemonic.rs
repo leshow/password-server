@@ -39,15 +39,15 @@ impl Mnemonic {
         result
     }
 
-    pub fn to_words(&self, wordslist: &[String]) -> Vec<String> {
+    pub fn to_words<'a>(&'a self, wordslist: &'a [String]) -> Vec<&str> {
         // Some explanation is necessary.. This uses nom's combinator macros to create a function
-        // that when called, a parser specifically for grabbing bits 11 at a time.
+        // that makes a parser specifically for grabbing bits 11 at a time, dumping in a u16
         named!(bit_vec<Vec<u16> >, bits!(many0!(take_bits!(u16, 11))));
 
         let mut mnem_words = Vec::new();
         if let IResult::Done(_, bit_sequence) = bit_vec(self.mnemonic.as_slice()) {
             for idx in bit_sequence.iter() {
-                mnem_words.push(wordslist[*idx as usize].clone());
+                mnem_words.push(wordslist[*idx as usize].as_ref());
             }
         }
 

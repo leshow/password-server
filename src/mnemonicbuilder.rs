@@ -26,7 +26,7 @@ impl<'a> MnemonicBuilder<'a> {
 
         try!(file.read_to_string(&mut string_from_file));
         let words: Vec<String> = string_from_file.split_whitespace()
-            .map(|s| s.to_owned())
+            .map(|s| s.into())
             .collect();
 
         Ok(MnemonicBuilder {
