@@ -22,7 +22,7 @@ pub struct Mnemonic {
 
 impl Mnemonic {
     pub fn new(chars: &str) -> Mnemonic {
-        let h = Mnemonic::gen_sha256(&chars).from_hex().unwrap();
+        let h = Mnemonic::gen_sha256(chars).from_hex().unwrap();
         let length = chars.len() / 32;
 
         Mnemonic { mnemonic: [chars.as_ref(), &h[..length]].concat() }
@@ -46,7 +46,7 @@ impl Mnemonic {
 
         let mut mnem_words = Vec::new();
         if let IResult::Done(_, bit_sequence) = bit_vec(self.mnemonic.as_slice()) {
-            for idx in bit_sequence.iter() {
+            for idx in &bit_sequence {
                 mnem_words.push(wordslist[*idx as usize].as_ref());
             }
         }
