@@ -23,22 +23,24 @@ fn main() {
 
     // set up routes
     let mut router = Router::new();
-
-    let builder1 = builder.clone();
-    router.get("/passphrase",
-               move |r: &mut Request| passphrase_handler(r, &builder1),
-               "passphrase");
-
-    let builder2 = builder.clone();
-    router.get("/passraw",
-               move |r: &mut Request| passraw_handler(r, &builder2),
-               "passraw");
-
-    let builder3 = builder.clone();
-    router.get("/passphrase/:num",
-               move |r: &mut Request| passphrase_sized_handler(r, &builder3),
-               "passnum");
-
+    {
+        let builder = builder.clone();
+        router.get("/passphrase",
+                   move |r: &mut Request| passphrase_handler(r, &builder),
+                   "passphrase");
+    }
+    {
+        let builder = builder.clone();
+        router.get("/passraw",
+                   move |r: &mut Request| passraw_handler(r, &builder),
+                   "passraw");
+    }
+    {
+        let builder = builder.clone();
+        router.get("/passphrase/:num",
+                   move |r: &mut Request| passphrase_sized_handler(r, &builder),
+                   "passnum");
+    }
     // add logger middleware
     let mut chain = Chain::new(router);
     chain.link_before(logger_before);
