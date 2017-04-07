@@ -5,8 +5,8 @@ extern crate rand;
 #[macro_use]
 extern crate nom;
 
-pub use mnemonicbuilder::MnemonicBuilder;
 pub use mnemonic::Mnemonic;
+pub use mnemonicbuilder::MnemonicBuilder;
 
 mod mnemonicbuilder;
 mod mnemonic;

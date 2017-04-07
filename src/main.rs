@@ -5,17 +5,17 @@ extern crate logger;
 extern crate lib;
 
 
-use std::io;
-use std::fmt::{self, Debug, Display};
-use std::error::Error;
-use std::sync::Arc;
 
 use iron::prelude::*;
 use iron::status;
-use router::Router;
-use logger::Logger;
 
-use lib::{MnemonicBuilder, Mnemonic};
+use lib::{Mnemonic, MnemonicBuilder};
+use logger::Logger;
+use router::Router;
+use std::error::Error;
+use std::fmt::{self, Debug, Display};
+use std::io;
+use std::sync::Arc;
 
 fn main() {
     let (logger_before, logger_after) = Logger::new(None);
@@ -25,21 +25,27 @@ fn main() {
     let mut router = Router::new();
     {
         let builder = builder.clone();
-        router.get("/passphrase",
-                   move |r: &mut Request| passphrase_handler(r, &builder),
-                   "passphrase");
+        router.get(
+            "/passphrase",
+            move |r: &mut Request| passphrase_handler(r, &builder),
+            "passphrase",
+        );
     }
     {
         let builder = builder.clone();
-        router.get("/passraw",
-                   move |r: &mut Request| passraw_handler(r, &builder),
-                   "passraw");
+        router.get(
+            "/passraw",
+            move |r: &mut Request| passraw_handler(r, &builder),
+            "passraw",
+        );
     }
     {
         let builder = builder.clone();
-        router.get("/passphrase/:num",
-                   move |r: &mut Request| passphrase_sized_handler(r, &builder),
-                   "passnum");
+        router.get(
+            "/passphrase/:num",
+            move |r: &mut Request| passphrase_sized_handler(r, &builder),
+            "passnum",
+        );
     }
     // add logger middleware
     let mut chain = Chain::new(router);
@@ -54,7 +60,7 @@ fn passphrase_handler(_: &mut Request, builder: &MnemonicBuilder) -> IronResult<
 
     match mnemonic {
         Ok(x) => Ok(Response::with((status::Ok, x.to_json(&builder.wordslist)))),
-        Err(x) => Err(IronError::new(StringError(x.to_string()), (status::BadRequest, "Error"))),
+        Err(x) => Err(IronError::new(StringError(x.to_string()), (status::BadRequest, "Error")),),
     }
 }
 
@@ -62,23 +68,33 @@ fn passraw_handler(_: &mut Request, builder: &MnemonicBuilder) -> IronResult<Res
     let mnemonic: Result<Mnemonic, io::Error> = builder.create();
 
     match mnemonic {
-        Ok(x) => Ok(Response::with((status::Ok, x.to_words(&builder.wordslist).join(" ")))),
-        Err(x) => Err(IronError::new(StringError(x.to_string()), (status::BadRequest, "Error"))),
+        Ok(x) => Ok(Response::with((status::Ok, x.to_words(&builder.wordslist).join(" "))),),
+        Err(x) => Err(IronError::new(StringError(x.to_string()), (status::BadRequest, "Error")),),
     }
 }
 
 fn passphrase_sized_handler(req: &mut Request, builder: &MnemonicBuilder) -> IronResult<Response> {
-    let num_str = req.extensions.get::<Router>().unwrap().find("num").unwrap();
+    let num_str = req.extensions
+        .get::<Router>()
+        .unwrap()
+        .find("num")
+        .unwrap();
     let num = num_str.parse::<usize>().unwrap_or(24);
     let mnemonic: Result<Mnemonic, io::Error> = builder.create();
 
     match mnemonic {
         Ok(x) => {
-            Ok(Response::with((status::Ok,
-                               format!("{{\"passphrase\": \"{}\"}}",
-                                       x.to_words(&builder.wordslist)[0..num].join(" ")))))
+            Ok(
+                Response::with(
+                    (status::Ok,
+                     format!(
+                        "{{\"passphrase\": \"{}\"}}",
+                        x.to_words(&builder.wordslist)[0..num].join(" ")
+                    )),
+                ),
+            )
         }
-        Err(x) => Err(IronError::new(StringError(x.to_string()), (status::BadRequest, "Error"))),
+        Err(x) => Err(IronError::new(StringError(x.to_string()), (status::BadRequest, "Error")),),
     }
 }
 
