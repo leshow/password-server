@@ -2,13 +2,13 @@
 // crates
 
 // lib
+
 use mnemonic::Mnemonic;
 use rand::{OsRng, Rng};
 // std
 use std::fs::File;
 use std::io::{Error, Read};
 use std::path::Path;
-use std::result::Result;
 
 static LENGTH: usize = 32;
 

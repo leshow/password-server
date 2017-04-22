@@ -59,7 +59,11 @@ fn passphrase_handler(_: &mut Request, builder: &MnemonicBuilder) -> IronResult<
     let mnemonic: Result<Mnemonic, io::Error> = builder.create();
 
     match mnemonic {
-        Ok(x) => Ok(Response::with((status::Ok, x.to_json(&builder.wordslist)))),
+        Ok(x) => {
+            let s = x.to_json(&builder.wordslist)
+                .expect("Error parsing to json");
+            Ok(Response::with((status::Ok, s)))
+        }
         Err(x) => Err(IronError::new(StringError(x.to_string()), (status::BadRequest, "Error")),),
     }
 }
