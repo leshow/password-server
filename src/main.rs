@@ -60,7 +60,7 @@ fn passphrase_handler(_: &mut Request, builder: &MnemonicBuilder) -> IronResult<
 
     match mnemonic {
         Ok(x) => {
-            let s = x.to_json(&builder.wordslist)
+            let s = x.to_json(&builder.words_list)
                 .expect("Error parsing to json");
             Ok(Response::with((status::Ok, s)))
         }
@@ -72,7 +72,7 @@ fn passraw_handler(_: &mut Request, builder: &MnemonicBuilder) -> IronResult<Res
     let mnemonic: Result<Mnemonic, io::Error> = builder.create();
 
     match mnemonic {
-        Ok(x) => Ok(Response::with((status::Ok, x.to_words(&builder.wordslist).join(" "))),),
+        Ok(x) => Ok(Response::with((status::Ok, x.to_words(&builder.words_list).join(" "))),),
         Err(x) => Err(IronError::new(StringError(x.to_string()), (status::BadRequest, "Error")),),
     }
 }
@@ -93,7 +93,7 @@ fn passphrase_sized_handler(req: &mut Request, builder: &MnemonicBuilder) -> Iro
                     (status::Ok,
                      format!(
                         "{{\"passphrase\": \"{}\"}}",
-                        x.to_words(&builder.wordslist)[0..num].join(" ")
+                        x.to_words(&builder.words_list)[0..num].join(" ")
                     )),
                 ),
             )
