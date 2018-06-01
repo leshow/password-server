@@ -1,8 +1,3 @@
-#![allow(dead_code)]
-// crates
-
-// lib
-
 use mnemonic::Mnemonic;
 use rand::{OsRng, Rng};
 // std
@@ -18,27 +13,25 @@ pub struct MnemonicBuilder<'a> {
     bit_length: usize,
 }
 
+static DEFAULT_SEED: &'static str = "seed";
+
 impl<'a> MnemonicBuilder<'a> {
     pub fn new() -> Result<MnemonicBuilder<'a>, Error> {
-        let seed: &str = "seed";
         let path = Path::new("src/wordslist/english.txt");
         let mut string_from_file = String::new();
 
-        File::open(&path)?
-            .read_to_string(&mut string_from_file)?;
+        File::open(&path)?.read_to_string(&mut string_from_file)?;
 
         let words_list: Vec<String> = string_from_file
             .split_whitespace()
             .map(|s| s.into())
             .collect();
 
-        Ok(
-            MnemonicBuilder {
-                seed,
-                words_list,
-                bit_length: LENGTH,
-            },
-        )
+        Ok(MnemonicBuilder {
+            seed: DEFAULT_SEED,
+            words_list,
+            bit_length: LENGTH,
+        })
     }
 
     pub fn with_seed(self, seed: &'a str) -> MnemonicBuilder<'a> {
